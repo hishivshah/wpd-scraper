@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 
 import mechanize
 from bs4 import BeautifulSoup
@@ -41,6 +42,26 @@ def extractDataFromHTML(htmlString):
         data.append(dataDict)
     return data
 
+def extractLatLngFromJS(htmlString):
+    coordinates = {}
+
+    expression = '\{\s*?' \
+    + 'title: "Name: (.*?)",\s*?' \
+    + 'position: new google.maps.LatLng\((.*?),(.*?)\),\s*?' \
+    + 'icon: "/App_Themes/WPD/images/buttons/location-marker.png"\s*?' \
+    + '\}'
+    regex = re.compile(expression)
+
+    soup = BeautifulSoup(htmlString, "html.parser")
+    for script in soup.find_all("script", attrs={"type": "text/javascript"}):
+        results = regex.findall(script.string)
+        for r in results:
+            name = r[0]
+            lat = float(r[1])
+            lon = float(r[2])
+            coordinates[name] = (lat, lon)
+
+    return coordinates
 
 if __name__ == '__main__':
     # Input paths
