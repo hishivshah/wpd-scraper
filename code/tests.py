@@ -5,12 +5,17 @@ import scraper
 
 class TestScraper(unittest.TestCase):
 
-    def test_csvToList(self):
+    def setUp(self):
         scriptDir = os.path.dirname(os.path.abspath(__file__))
-        csvPath = os.path.join(scriptDir, "test_data", "codepoint.csv")
+        self.csvPath = os.path.join(scriptDir, "test_data", "codepoint.csv")
+        htmlPath = os.path.join(scriptDir, "test_data", "generationmap.html")
+        with open(htmlPath, "r") as f:
+             self.htmlString = unicode(f.read())
+
+    def test_csvToList(self):
         postcodeList = ["CF101AA", "CF101AB"]
         self.assertEqual(
-            scraper.csvToList(csvPath, startswithstring="CF10"),
+            scraper.csvToList(self.csvPath, startswithstring="CF10"),
             postcodeList
         )
 
@@ -19,44 +24,18 @@ class TestScraper(unittest.TestCase):
         self.assertTrue('<div class="location">' in scraper.getHTML(postcode))
 
     def test_extractDataFromHTML(self):
-        htmlString = unicode("""
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <meta charset="UTF-8">
-            <title>test html</title>
-            </head>
-            <body>
-            <div class="locations" style="overflow-y:scroll; height:600px;">
-                <div class="location">
-                    <h2>BRIDGE ST</h2>
-                    <div class="details">
-                        <p><strong>Voltage:</strong> 11 kV</p>
-                        <p><strong>Capacity at substation:</strong> 310 kW</p>
-                        <p><strong>Capacity 1km from substation:</strong> 300 kW</p>
-                        <p><strong>Substation ID:</strong> 563353</p>
-                        <p><strong>Distance from search point:</strong> 0.15 Km</p>
-                    </div>
-                </div>
-                <div class="location">
-                    <h2>CWMDU ST</h2>
-                    <div class="details">
-                        <p><strong>Voltage:</strong> 11 kV</p>
-                        <p><strong>Capacity at substation:</strong> 310 kW</p>
-                        <p><strong>Capacity 1km from substation:</strong> 300 kW</p>
-                        <p><strong>Substation ID:</strong> 563354</p>
-                        <p><strong>Distance from search point:</strong> 0.16 Km</p>
-                    </div>
-                </div>
-            </div>
-            </bodY>
-            </html>
-        """)
         data = [
-            {u"name": u"BRIDGE ST", u"Voltage": u"11 kV", u"Capacity at substation": u"310 kW", u"Capacity 1km from substation": u"300 kW", u"Substation ID": u"563353"},
-            {u"name": u"CWMDU ST", u"Voltage": u"11 kV", u"Capacity at substation": u"310 kW", u"Capacity 1km from substation": u"300 kW", u"Substation ID": u"563354"}
+            {u"name": u"BAKERS ROW", u"Voltage": u"11 kV", u"Capacity at substation": u"5000 kW", u"Capacity 1km from substation": u"5000 kW", u"Substation ID": u"512615"},
+            {u"name": u"NEW DAVID MORGAN", u"Voltage": u"11 kV", u"Capacity at substation": u"5000 kW", u"Capacity 1km from substation": u"5000 kW", u"Substation ID": u"513554"}
         ]
-        self.assertEqual(scraper.extractDataFromHTML(htmlString), data)
+        self.assertEqual(scraper.extractDataFromHTML(self.htmlString), data)
+
+    def test_extractLatLngFromJS(self):
+        coordinates = {
+            "BAKERS ROW": (51.4793281555176, -3.177579164505),
+            "NEW DAVID MORGAN": (51.4792747497559, -3.17744898796082)
+        }
+        self.assertEqual(scraper.extractLatLngFromJS(self.htmlString), coordinates)
 
 if __name__ == '__main__':
     unittest.main()
