@@ -60,7 +60,7 @@ def extractLatLngFromJS(htmlString):
 
     soup = BeautifulSoup(htmlString, "html.parser")
     for script in soup.find_all("script", attrs={"type": "text/javascript"}):
-        results = regex.findall(script.string)
+        results = regex.findall(script.string or '')
         for r in results:
             name = r[0]
             lat = float(r[1])
@@ -104,7 +104,9 @@ if __name__ == '__main__':
             "name",
             "Voltage",
             "Capacity at substation",
-            "Capacity 1km from substation"
+            "Capacity 1km from substation",
+            "Lat",
+            "Lon"
         ]
         writer = csv.DictWriter(outCsv, fieldnames)
         writer.writeheader()
