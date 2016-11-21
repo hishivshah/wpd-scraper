@@ -25,8 +25,23 @@ class TestScraper(unittest.TestCase):
 
     def test_extractDataFromHTML(self):
         data = [
-            {u"name": u"BAKERS ROW", u"Voltage": u"11 kV", u"Capacity at substation": u"5000 kW", u"Capacity 1km from substation": u"5000 kW", u"Substation ID": u"512615"},
-            {u"name": u"NEW DAVID MORGAN", u"Voltage": u"11 kV", u"Capacity at substation": u"5000 kW", u"Capacity 1km from substation": u"5000 kW", u"Substation ID": u"513554"}
+            {
+                u"name": u"BAKERS ROW",
+                u"Voltage": u"11 kV",
+                u"Capacity at substation": u"5000 kW",
+                u"Capacity 1km from substation": u"5000 kW",
+                u"Substation ID": u"512615",
+                u"Lat": 51.4793281555176,
+                u"Lon": -3.177579164505
+            }, {
+                u"name": u"NEW DAVID MORGAN",
+                u"Voltage": u"11 kV",
+                u"Capacity at substation": u"5000 kW",
+                u"Capacity 1km from substation": u"5000 kW",
+                u"Substation ID": u"513554",
+                u"Lat": 51.4792747497559,
+                u"Lon": -3.17744898796082
+            }
         ]
         self.assertEqual(scraper.extractDataFromHTML(self.htmlString), data)
 
@@ -35,7 +50,9 @@ class TestScraper(unittest.TestCase):
             "BAKERS ROW": (51.4793281555176, -3.177579164505),
             "NEW DAVID MORGAN": (51.4792747497559, -3.17744898796082)
         }
-        self.assertEqual(scraper.extractLatLngFromJS(self.htmlString), coordinates)
+        self.assertEqual(
+            scraper.extractLatLngFromJS(self.htmlString), coordinates
+        )
 
 if __name__ == '__main__':
     unittest.main()

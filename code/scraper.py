@@ -29,11 +29,17 @@ def getHTML(postcode):
 
 
 def extractDataFromHTML(htmlString):
+    coordinates = extractLatLngFromJS(htmlString)
+
     soup = BeautifulSoup(htmlString, "html.parser")
     data = []
     for location in soup.find_all("div", class_="location"):
         dataDict = {}
-        dataDict[u"name"] = location.h2.string
+        name = location.h2.string
+        lat, lon = coordinates[name]
+        dataDict[u"name"] = name
+        dataDict[u"Lat"] = lat
+        dataDict[u"Lon"] = lon
         for strongTag in location.find_all("strong"):
             k = strongTag.string.replace(":", "")
             v = strongTag.next_sibling.strip()
