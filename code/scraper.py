@@ -45,7 +45,7 @@ def extractDataFromHTML(htmlString):
 if __name__ == '__main__':
     # Input paths
     scriptDir = os.path.dirname(os.path.abspath(__file__))
-    csvPath = os.path.abspath(os.path.join(
+    codepointCsvPath = os.path.abspath(os.path.join(
         scriptDir,
         "..",
         "data",
@@ -53,6 +53,32 @@ if __name__ == '__main__':
         "two_letter_pc_code",
         "cf.csv"
     ))
+    # Output paths
+    outCsvPath = os.path.abspath(
+         os.path.join(scriptDir, "..", "results", "substations.csv")
+    )
 
     # Get list of postcodes
-    postcodes = csvToList(csvPath, "CF34")
+    postcodes = csvToList(codepointCsvPath, "CF340A")
+
+    # Scrape data for each postcode
+    data = []
+    for postcode in postcodes:
+        html = getHTML(postcode)
+        data += extractDataFromHTML(html)
+
+    # Remove duplicates
+    data = [dict(t) for t in set([tuple(sorted(d.items())) for d in data])]
+
+    # Write to csv
+    with open(outCsvPath, "wb") as outCsv:
+        fieldnames = [
+            "Substation ID",
+            "name",
+            "Voltage",
+            "Capacity at substation",
+            "Capacity 1km from substation"
+        ]
+        writer = csv.DictWriter(outCsv, fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
