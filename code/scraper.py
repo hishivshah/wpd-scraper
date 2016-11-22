@@ -86,7 +86,7 @@ if __name__ == '__main__':
     )
 
     # Get list of postcodes
-    postcodes = csvToList(codepointCsvPath, "CF340A")
+    postcodes = csvToList(codepointCsvPath, "CF34")
 
     # Scrape data for each postcode
     data = []
