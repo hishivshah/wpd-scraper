@@ -5,6 +5,7 @@ import re
 import mechanize
 from bs4 import BeautifulSoup
 
+
 def csvToList(csvPath, startswithstring=""):
     ''' Returns a list of postcodes from a codepoint csv file.'''
     postcodes = []
@@ -16,13 +17,17 @@ def csvToList(csvPath, startswithstring=""):
                 postcodes.append(postcode)
     return postcodes
 
+
 def getHTML(postcode):
-    url = "https://www.westernpower.co.uk/Connections/Generation/Generation-Capacity-Map/Distributed-Generation-Map.aspx"
+    url = "https://www.westernpower.co.uk/" \
+          + "Connections/Generation/Generation-Capacity-Map/" \
+          + "Distributed-Generation-Map.aspx"
     browser = mechanize.Browser()
     browser.set_handle_robots(False)
     browser.open(url)
     browser.select_form(nr=0)
-    browser.form["ctl00$plcMain$plcZones$lt$DistributionMap2$tbSearch"] = postcode
+    elemName = "ctl00$plcMain$plcZones$lt$DistributionMap2$tbSearch"
+    browser.form[elemName] = postcode
     response = browser.submit()
 
     return response.get_data()
@@ -48,14 +53,16 @@ def extractDataFromHTML(htmlString):
         data.append(dataDict)
     return data
 
+
 def extractLatLngFromJS(htmlString):
     coordinates = {}
 
-    expression = '\{\s*?' \
-    + 'title: "Name: (.*?)",\s*?' \
-    + 'position: new google.maps.LatLng\((.*?),(.*?)\),\s*?' \
-    + 'icon: "/App_Themes/WPD/images/buttons/location-marker.png"\s*?' \
-    + '\}'
+    expression = \
+        '\{\s*?' \
+        + 'title: "Name: (.*?)",\s*?' \
+        + 'position: new google.maps.LatLng\((.*?),(.*?)\),\s*?' \
+        + 'icon: "/App_Themes/WPD/images/buttons/location-marker.png"\s*?' \
+        + '\}'
     regex = re.compile(expression)
 
     soup = BeautifulSoup(htmlString, "html.parser")

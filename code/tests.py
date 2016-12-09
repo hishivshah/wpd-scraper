@@ -3,6 +3,7 @@ import unittest
 
 import scraper
 
+
 class TestScraper(unittest.TestCase):
 
     def setUp(self):
@@ -10,7 +11,7 @@ class TestScraper(unittest.TestCase):
         self.csvPath = os.path.join(scriptDir, "test_data", "codepoint.csv")
         htmlPath = os.path.join(scriptDir, "test_data", "generationmap.html")
         with open(htmlPath, "r") as f:
-             self.htmlString = unicode(f.read())
+            self.htmlString = unicode(f.read())
 
     def test_csvToList(self):
         postcodeList = ["CF101AA", "CF101AB"]
